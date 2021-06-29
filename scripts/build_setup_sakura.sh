@@ -162,7 +162,6 @@ elif [[ ${1} == "--no-build" ]] ; then
 elif [[ ${1} == "--clean" ]] ; then
       sleep 1
 	  echo -e "\e[0;36mCleanup Job Started...... \e[0m" >&3
-      cd ../../
 	  rm -rf ../../ProjectSakura/
 	  echo -e "\e[0;32mDone \e[0m" >&3
       sleep 2
