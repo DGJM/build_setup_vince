@@ -1,11 +1,17 @@
 # Copyright (C) 2021 PrajjuS, Sr. DGJM
 
 #!/usr/bin/env bash
-## Start ProjectSakura Script
-## logger
-exec 3>&1 4>&2
-trap 'exec 2>&4 1>&3' 0 1 2 3
-exec 1>build_log.txt 2>&1
+
+## logger/verbose	  
+if [[ ${2} == "--verbose" ]] || [[ ${2} == "-v" ]]; then
+	exec > >(tee ../../build_log.txt)
+	exec 3> >(tee -a ../../build_log.txt)
+else 
+	exec 3>&1 4>&2
+	trap 'exec 2>&4 1>&3' 0 1 2 3
+	exec 1> ../../build_log.txt 2>&1
+fi
+
 
 
 ## check if theres errors and terminates when detected
@@ -24,6 +30,7 @@ read -p "Press Enter...."
 exit
 }
 
+
 banner () {
 clear
 echo ""
@@ -32,13 +39,27 @@ echo "Project Sakura Setup Script Vince"
 echo "---------------------------------"
 echo ""
 }
-banner >&3
+
 ## Full Build
-if [[ ${1} == "--build" ]] ; then
+
+## Start ProjectSakura Script
+if [[ ${1} == "--build" ]] || [[ ${1} == "-b" ]]; then
+	  banner >&3
       sleep 2
-	  echo -e "\e[0;33mStarting Script.... \e[0m" >&3
+	  echo -e "\e[0;32mStarting Script.... \e[0m" >&3
       cd ../../
       sleep 1
+
+## Logfile Cleanup
+if [ -f build_log.txt ]; then
+	echo -e "\e[0;33mLog File(s) Detected... Deleting...\e[0m" >&3
+	rm -rf build_log.txt
+	echo -e "\e[0;32mDone \e[0m" >&3
+else
+	echo OK
+fi
+
+
 
 ## Sync ProjectSakura Rom Manifest
 	  echo -e "\e[0;36mSyncing ProjectSakura rom manifest...\e[0m" >&3
@@ -100,9 +121,8 @@ if [[ ${1} == "--build" ]] ; then
       sleep 2
 	  exit
 
-
 ## No Build
-elif [[ ${1} == "--no-build" ]] ; then
+elif [[ ${1} == "--no-build" ]] || [[ ${1} == "-nb" ]]; then
       sleep 2
       echo "Starting Script...." >&3
       cd ../../
@@ -159,8 +179,8 @@ elif [[ ${1} == "--no-build" ]] ; then
 	  exit
 
 ## Cleanup
-elif [[ ${1} == "--clean" ]] ; then
-      sleep 1
+elif [[ ${1} == "--clean" ]] || [[ ${1} == "-c" ]]; then
+	  banner >&3
 	  echo -e "\e[0;36mCleanup Job Started...... \e[0m" >&3
 	  rm -rf ../../ProjectSakura/
 	  echo -e "\e[0;32mDone \e[0m" >&3
@@ -168,23 +188,24 @@ elif [[ ${1} == "--clean" ]] ; then
 	  exit
 
 ## Help Script
-elif [[ ${1} == "--help" ]] ; then
-      sleep 1
+elif [[ ${1} == "--help" ]] || [[ ${1} == "-h" ]]; then
       echo "Usage:" >&3
-      echo "--help: to get this message" >&3
-      echo "--no-build : to setup device side things only" >&3
-      echo "--build : to setup device side things and start rom build" >&3
-      echo "--clean : Does a Cleanup Job" >&3
+      echo "-h, --help: to get this message" >&3
+      echo "-nb, --no-build : to setup device side things only" >&3
+      echo "-b, --build : to setup device side things and start rom build" >&3
+      echo "-c, --clean : Does a Cleanup Job" >&3
+      echo "-v, --verbose : If you want to enable Verbose Mode" >&3
       echo "" >&3
 
 else
-      sleep 1
       echo "Usage:" >&3
-      echo "--help: to get this message" >&3
-      echo "--no-build : to setup device side things only" >&3
-      echo "--build : to setup device side things and start rom build" >&3
-      echo "--clean : Does a Cleanup Job" >&3
+      echo "-h, --help: to get this message" >&3
+      echo "-nb, --no-build : to setup device side things only" >&3
+      echo "-b, --build : to setup device side things and start rom build" >&3
+      echo "-c, --clean : Does a Cleanup Job" >&3
+      echo "-v,--verbose : If you want to enable Verbose Mode" >&3
       echo "" >&3
-	  
-
 fi
+
+
+
